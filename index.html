@@ -11,7 +11,7 @@
 		click the button.
 		</p>
 		<!-- <input id="code" value="sum([1, 2, 3, 4, 5])" /> -->
-		<button onclick="evaluatePython()">Run</button>
+		<button id="runbutton">Run</button>
 		<br />
 		<label for="myfile">Select a file:</label>
 		<input type="file" id="myfile" name="myfile">
@@ -39,8 +39,8 @@
 				let pyodide = await loadPyodide();
 				await pyodide.loadPackage("micropip");
 				const micropip = pyodide.pyimport("micropip");
-				await micropip.install("matplotlib");
-				await micropip.install("pandas");
+				// await micropip.install("matplotlib");
+				// await micropip.install("pandas");
 				output.value += "Ready!\n";
 				return pyodide;
 			}
