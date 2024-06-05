@@ -5,6 +5,7 @@ from js import document, FileReader
 import json
 from datetime import datetime
 from pyodide.ffi import create_proxy
+from io import StringIO
 
 selected_file = None
 
@@ -14,26 +15,18 @@ async def process_file(event):
     fileList = event.target.files
     selected_file = fileList.item(0)
 
-    # for f in fileList:
-    #     selected_file = f
-
-
-
-    # for f in fileList:
-    #     data = await f.text()
-    #     count = 0;
-    #     for line in data:
-    #         count = count + 1
-    #
-        # document.getElementById("output").innerHTML = "\nfile inputted\n"
     print("file inputted!")
 
 async def do_the_thing(event, file):
 
+    print("Crunching the data...")
     the_string: str = await file.text()
+    print("loaded all the shit into memory")
     count = 0;
-    # for thing in the_string:
-    #     count += 1
+    fake_file = StringIO(the_string)
+    print("constructed a fake file")
+    # for line in fake_file:
+    #     do_something_with(line)
 
     output = "all's good"
     age_times = []
@@ -45,18 +38,16 @@ async def do_the_thing(event, file):
     gender_lists = {k:[] for k in gender_keys}
 
     print('done setting up')
-    for line in iter(the_string.splitlines()):
-        print(line)
-        count += 1
+    # for line in fake_file:
+    #     print(line)
+    #     count += 1
 
-    print("count is ", count)
+    # print("count is ", count)
 
-    for line in iter(the_string.splitlines()):
+    for line in fake_file:
         # for line in f:
         if ',"predicted_' in line:
             j = json.loads(line)
-            # print(j)
-            # pprint(j)
             if 'predicted_age' in j:
                 age_times.append(datetime.fromisoformat(j.get('day_pt').replace(' UTC', '')))
                 for key in age_keys:
