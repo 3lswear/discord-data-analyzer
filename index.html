@@ -7,21 +7,22 @@
 	<body>
 		<h1>THE GREAT DISCORD DATA ANALYZER</h1>
 		<p>
-		You can execute any Python code. Just enter something in the box below and
-		click the button.
+		SELECT A FILE AND PRESS A BUTTON
 		</p>
 		<!-- <input id="code" value="sum([1, 2, 3, 4, 5])" /> -->
-		<button id="runbutton">Run</button>
-		<br />
 		<label for="myfile">Select a file:</label>
 		<input type="file" id="myfile" name="myfile">
 		<br />
-		<p>File Content:</p>
+		<br />
+		<button id="runbutton">CRUNCH THE DATA</button>
+		<br />
+		<button onclick="evaluatePython()"">Eval python again?</button>
+		<p>Program output:</p>
 		<div style="border:2px inset #AAA;cursor:text;height:120px;overflow:auto;width:600px; resize:both">
 			<div id="content">
 			</div>
 		</div>
-		<div>Output:</div>
+		<div>Some Other Output:</div>
 		<textarea id="output" style="width: 100%;" rows="6" disabled></textarea>
 
 		<script>
@@ -39,7 +40,7 @@
 				let pyodide = await loadPyodide();
 				await pyodide.loadPackage("micropip");
 				const micropip = pyodide.pyimport("micropip");
-				// await micropip.install("matplotlib");
+				await micropip.install("matplotlib");
 				// await micropip.install("pandas");
 				output.value += "Ready!\n";
 				return pyodide;
