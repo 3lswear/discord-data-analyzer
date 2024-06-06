@@ -1,35 +1,20 @@
+from js import document, FileReader
+from pyodide.ffi import create_proxy
+import glob
+import json
+import asyncio
+from datetime import datetime
 import matplotlib
 import matplotlib.pyplot as plt
-# import pandas as pd
-import asyncio
-from js import document, FileReader
-import json
-from datetime import datetime
-from pyodide.ffi import create_proxy
-from io import StringIO
 
-selected_file = None
-
-async def process_file(event):
-    global selected_file
-
-    fileList = event.target.files
-    selected_file = fileList.item(0)
-
-    print("file inputted!")
-
-async def do_the_thing(event, file):
+async def do_the_thing(event):
 
     print("Crunching the data...")
-    # the_string: str = await file.text()
-    print("loaded all the shit into memory")
     count = 0;
-    f = open('/data/events.json', 'r')
-    print("opened a file")
+# if not os.getcwd().replace("\\", "/").endswith("activity/analytics"):
+# 	print("Warning: you don't seem to be in the activity/analytics/ directory!")
     # for line in f:
     #     do_something_with(line)
-
-    output = "all's good"
 
     age_times = []
     age_keys = ["prob_13_17", "prob_18_24", "prob_25_34", "prob_35_over"]
@@ -45,18 +30,21 @@ async def do_the_thing(event, file):
 
     # print("count is ", count)
 
-    for line in f:
-        # for line in f:
-        if ',"predicted_' in line:
-            j = json.loads(line)
-            if 'predicted_age' in j:
-                age_times.append(datetime.fromisoformat(j.get('day_pt').replace(' UTC', '')))
-                for key in age_keys:
-                    age_lists[key].append(j.get(key))
-            if 'predicted_gender' in j:
-                gender_times.append(datetime.fromisoformat(j.get('day_pt').replace(' UTC', '')))
-                for key in gender_keys:
-                    gender_lists[key].append(j.get(key))
+    activity_files = glob.glob("/data/events-*-*-of-*.json")
+    for activity_file in activity_files:
+        print(f"Processing {activity_file}")
+        with open(activity_file, 'r') as f:
+            for line in f:
+                if ',"predicted_' in line:
+                    j = json.loads(line)
+                    if 'predicted_age' in j:
+                        age_times.append(datetime.fromisoformat(j.get('day_pt').replace(' UTC', '')))
+                        for key in age_keys:
+                            age_lists[key].append(j.get(key))
+                    if 'predicted_gender' in j:
+                        gender_times.append(datetime.fromisoformat(j.get('day_pt').replace(' UTC', '')))
+                        for key in gender_keys:
+                            gender_lists[key].append(j.get(key))
 
     print('done filling lists')
     print(f'age_times len = {len(age_times)}')
@@ -78,28 +66,28 @@ async def do_the_thing(event, file):
         plt.show()
 
     if len(age_times) == 0 and len(gender_times) == 0:
-        output = "No data for you :("
+        print("No data for you :( (there was no relevant data)")
 
-    document.getElementById("content").innerHTML = output
+    # document.getElementById("content").innerHTML = output
 
 def main():
 
-    global selected_file
     # Create a Python proxy for the callback function
     # process_file() is your function to process events from FileReader
-    file_event = create_proxy(process_file)
+    # file_event = create_proxy(process_file)
 
     # Set the listener to the callback
-    e = document.getElementById("myfile")
-    e.addEventListener("change", file_event, False)
+    # e = document.getElementById("myfile")
+    # e.addEventListener("change", file_event, False)
 
-    def run_button(event):
-        asyncio.ensure_future(do_the_thing(event, selected_file))
+    # def run_button(event):
+    #     asyncio.ensure_future(do_the_thing(event, selected_file))
 
 
-    button_event = create_proxy(run_button)
+    button_event = create_proxy(do_the_thing)
     button = document.getElementById('runbutton')
     button.addEventListener('click', button_event, False)
-    print("python file loaded!")
+
+    print("👋 I am loaded now, push the button!")
 
 main()
