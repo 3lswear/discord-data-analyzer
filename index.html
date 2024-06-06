@@ -13,10 +13,11 @@
 		<label for="myfile">Select a file:</label>
 		<input type="file" id="myfile" name="myfile">
 		<br />
+		<button id="directory-picker" onclick="evaluatePython()">Pick Directory</button>
 		<br />
 		<button id="runbutton">CRUNCH THE DATA</button>
 		<br />
-		<button onclick="evaluatePython()"">Eval python again?</button>
+		<!-- <button onclick="evaluatePython()"">Eval python again?</button> -->
 		<p>Program output:</p>
 		<div style="border:2px inset #AAA;cursor:text;height:120px;overflow:auto;width:600px; resize:both">
 			<div id="content">
@@ -28,6 +29,7 @@
 		<script>
 			const output = document.getElementById("output");
 			// const code = document.getElementById("code");
+
 
 			function addToOutput(s) {
 				// output.value += ">>>" + code.value + "\n" + s + "\n";
@@ -45,14 +47,29 @@
 				output.value += "Ready!\n";
 				return pyodide;
 			}
+			// dirHandle = ""
 			let pyodideReadyPromise = main();
 
-			evaluatePython()
+			// evaluatePython()
+
+			// async function get_dir_handle() {
+			// 		dirHandle = await showDirectoryPicker();
+			// }
 
 			async function evaluatePython() {
 				let pyodide = await pyodideReadyPromise;
 				try {
 					// let output = pyodide.runPython(code.value);
+					const dirHandle = await showDirectoryPicker();
+					const permissionStatus = await dirHandle.requestPermission({
+						mode: "read",
+					});
+
+					if (permissionStatus !== "granted") {
+						throw new Error("readwrite access to directory not granted");
+					}
+
+					const nativefs = await pyodide.mountNativeFS("/data", dirHandle);
 					let output = pyodide.runPython(await (await fetch("/script.py")).text())
 					addToOutput(output);
 
@@ -60,6 +77,34 @@
 					addToOutput(err);
 				}
 			}
+
+			// async function getDirectoryHandle() {
+			// 	try {
+			// 		// Prompt the user to select a directory.
+			// 			const directoryHandle = await window.showDirectoryPicker();
+			// 		console.log('Directory selected:', directoryHandle);
+			// 		return directoryHandle;
+			// 	} catch (error) {
+			// 		console.error('Error selecting directory:', error);
+			// 	}
+			// }
+			// document.getElementById('directory-picker').addEventListener('click', get_dir_handle);
+
+			// async function pick_dir() {
+			// 	// const dirHandle = showDirectoryPicker();
+			// 	// const permissionStatus = await dirHandle.requestPermission({
+			// 	// 	mode: "read",
+			// 	// });
+			//
+			// 	// if (permissionStatus !== "granted") {
+			// 	// 	throw new Error("readwrite access to directory not granted");
+			// 	// }
+			// 	// const dirName = "/home/roman/work/3_own/discord-gender-analyzer/";
+			// 	const dirHandle = getDirectoryHandle()
+			//
+			// 	const nativefs = await pyodide.mountNativeFS("/data", dirHandle);
+			//
+			// }
 		</script>
 	</body>
 </html>

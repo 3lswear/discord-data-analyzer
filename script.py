@@ -1,3 +1,4 @@
+import matplotlib
 import matplotlib.pyplot as plt
 # import pandas as pd
 import asyncio
@@ -20,31 +21,31 @@ async def process_file(event):
 async def do_the_thing(event, file):
 
     print("Crunching the data...")
-    the_string: str = await file.text()
+    # the_string: str = await file.text()
     print("loaded all the shit into memory")
     count = 0;
-    fake_file = StringIO(the_string)
-    print("constructed a fake file")
-    # for line in fake_file:
+    f = open('/data/events.json', 'r')
+    print("opened a file")
+    # for line in f:
     #     do_something_with(line)
 
     output = "all's good"
+
     age_times = []
     age_keys = ["prob_13_17", "prob_18_24", "prob_25_34", "prob_35_over"]
     age_lists = {k:[] for k in age_keys}
-
     gender_times = []
     gender_keys = ["prob_male", "prob_female", "prob_non_binary_gender_expansive"]
     gender_lists = {k:[] for k in gender_keys}
 
     print('done setting up')
-    # for line in fake_file:
+    # for line in f:
     #     print(line)
     #     count += 1
 
     # print("count is ", count)
 
-    for line in fake_file:
+    for line in f:
         # for line in f:
         if ',"predicted_' in line:
             j = json.loads(line)
@@ -99,5 +100,6 @@ def main():
     button_event = create_proxy(run_button)
     button = document.getElementById('runbutton')
     button.addEventListener('click', button_event, False)
+    print("python file loaded!")
 
 main()
