@@ -2,76 +2,78 @@
 <html>
 	<head>
 		<script src="https://cdn.jsdelivr.net/pyodide/v0.26.0/full/pyodide.js"></script>
+		<link rel="stylesheet" type="text/css" href="stylesheet.css">
+		<script src="script.js" defer></script>
 	</head>
 
 	<body>
-		<img src="/assets/logo.webp" width=100%>
+		<img src="/assets/logo.webp" width=100% id="logo">
 		<br />
-		<label for="directory-picker">1. Select a activity/analytics directory</label>
-		<button id="directory-picker" onclick="evaluatePython()" disabled>Pick Directory</button>
+		<p>
+		This is a visualizer for your predicted gender and age numbers from events-*.json from your Discord Data Package.
+		</p>
+		<p>
+		Here's how to use it:
+		</p>
+		<ol start="0">
+			<li>Get your Discord Data Package.
+				<a href="https://support.discord.com/hc/en-us/articles/360004027692-Requesting-a-Copy-of-your-Data">Here's</a>
+				how to do it.
+				<br>
+				Spoiler: It can take up to several days. When you receive it in the mail, come back!
+			</li>
+			<li>Unpack the zip you got into a folder somewhere</li>
+			<li>
+				<label for="directory-picker">Select the <b>package/activity/analytics</b> directory
+					inside your unpacked package</label>
+				<button id="directory-picker" onclick="evaluatePython()" disabled>Pick Directory</button>
+			</li>
+			<li>
+				<label for="runbutton">Push this button when it becomes active</label>
+				<button id="runbutton" disabled>CRUNCH THE DATA</button>
+			</li>
+		</ol>
+		<!-- <label for="directory-picker">3. Select the <b>package/activity/analytics</b> directory -->
+		<!-- 	inside your unpacked package</label> -->
+		<!-- <button id="directory-picker" onclick="evaluatePython()" disabled>Pick Directory</button> -->
+		<!-- <br /> -->
+		<!-- <br /> -->
 		<br />
-		<br />
-		<label for="runbutton">2. push this button</label>
-		<button id="runbutton" disabled>CRUNCH THE DATA</button>
-		<br />
-		<!-- <button onclick="evaluatePython()"">Eval python again?</button> -->
-		<!-- <p>Program output:</p> -->
-		<!-- <div style="border:2px inset #AAA;cursor:text;height:120px;overflow:auto;width:600px; resize:both"> -->
-		<!-- 	<div id="content"> </div> -->
-		<!-- </div> -->
-		<div>JS output</div>
+		<div>JS output:</div>
 		<textarea id="output" style="width: 100%;" rows="8" disabled></textarea>
 		<div>Python output</div>
 		<textarea id="output2" style="width: 100%;" rows="8" disabled></textarea>
 
-		<script>
-			const output = document.getElementById("output");
-			function addToOutput(s) {
-				output.value += s + "\n";
-			}
+		<details>
+			<summary>What is it?</summary>
+			It is a site (program) that graphs your Discord data from a file from your Discord Data Package.
+		</details>
+		<details>
+			<summary>Why is it?</summary>
+			I wanted a write a simple site to point my frieds to to view their 
+			Discord data. Cause it is fun to look at what Discord thinks about 
+			your gender and age.
+			<br>
+			Not everyone has python installed, and this site
+			is basically equivalent to a python script, but it runs in a
+			browser, and works fully locally.
+		</details>
+		<details>
+			<summary>How does it work</summary>
+			You provide a directory, a Python script opens the events-*.json
+			file and plots the data with matplotlib.
+			And it doesn't send nor store any of your data!
+			Thanks to TODO: mention gist author
+			<br>
+			Under the hood it uses PyOdide runtime (WASM) which conveniently
+			bundles several popular Python packages, including matplotlib.
+			<details>
+				<summary>Huh? Doesn't store? Why would I believe you?</summary>
+				You can see the source code for youself. It pulls pyodide 
+				runtime from a CDN, and python script is in /script.py, so feel
+				welcome to check it out yourself.
+			</details>
+		</details>
 
-			addToOutput("Loading python packages... 🔧");
-			// init Pyodide
-			async function main() {
-				var out2 = document.getElementById("output2")
-				let pyodide = await loadPyodide({
-					stdout: (text) => {out2.textContent += text + "\n";},
-					stderr: (text) => {out2.textContent += text + "\n";}
-				});
-				await pyodide.loadPackage("micropip");
-				const micropip = pyodide.pyimport("micropip");
-				await micropip.install("matplotlib");
-				// await micropip.install("pandas");
-				addToOutput("Python packages and runtime loaded! ✅");
-				document.getElementById("directory-picker").removeAttribute("disabled")
-				return pyodide;
-			}
-			let pyodideReadyPromise = main();
-
-
-			async function evaluatePython() {
-				let pyodide = await pyodideReadyPromise;
-				try {
-					const dirHandle = await showDirectoryPicker();
-					const permissionStatus = await dirHandle.requestPermission({
-						mode: "read",
-					});
-
-					if (permissionStatus !== "granted") {
-						throw new Error("read access to directory not granted");
-					}
-
-					const nativefs = await pyodide.mountNativeFS("/data", dirHandle);
-					addToOutput("Loading python script... 🔧");
-					pyodide.runPython(await (await fetch("/script.py")).text())
-					addToOutput("Python file loaded! ✅");
-					document.getElementById("runbutton").removeAttribute("disabled")
-
-				} catch (err) {
-					addToOutput(err);
-				}
-			}
-
-		</script>
 	</body>
 </html>
