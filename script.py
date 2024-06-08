@@ -6,6 +6,7 @@ import asyncio
 from datetime import datetime
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.axes as mpl_axes
 matplotlib.use("module://matplotlib_pyodide.wasm_backend")
 # matplotlib.use("module://matplotlib_pyodide.html5_canvas_backend")
 
@@ -14,7 +15,6 @@ async def do_the_thing(event):
     VERSION = "0.1"
 
     print("Crunching the data...")
-    count = 0;
 
     age_times = []
     age_keys = ["prob_13_17", "prob_18_24", "prob_25_34", "prob_35_over"]
@@ -25,10 +25,10 @@ async def do_the_thing(event):
 
 
     activity_files = glob.glob("/data/events-*-*-of-*.json")
+    user_id = None
     for activity_file in activity_files:
         print(f"Processing {activity_file}")
         with open(activity_file, 'r') as f:
-            user_id = None
             for line in f:
                 if ',"predicted_' in line:
                     j = json.loads(line)
@@ -49,29 +49,35 @@ async def do_the_thing(event):
     print(f'gender points = {len(gender_times)}')
 
     fig, axs = plt.subplots(2)
-    # plt.figure(figsize=(6,6), dpi=72)
+    fig.set_size_inches(15, 15);
+
+    age_ax: mpl_axes.Axes = axs[0]
+    gender_ax: mpl_axes.Axes = axs[1]
+    age_ax.set_ylim(0.0, 1.0)
+    age_ax.set_ylim(0.0, 1.0)
 
     if (len(age_times)):
-        fig.suptitle("two things")
+        fig.suptitle(f"Discord data for user_id {user_id}")
         # plt.title("Discord predicted age")
+        age_ax.set_title("Predicted age")
         for key in age_keys:
             print(f'plotting {key}')
-            axs[0].plot(*zip(*sorted(zip(age_times, age_lists[key]))), marker='o')
-        axs[0].legend(["13-17", "18-24", "25-34", "35+"])
+            age_ax.plot(*zip(*sorted(zip(age_times, age_lists[key]))), marker='o')
+        age_ax.legend(["13-17", "18-24", "25-34", "35+"])
         # plt.tight_layout()
         # plt.show()
 
     if (len(gender_times)):
-        # plt.figure(figsize=(6,6), dpi=72)
-        # axs[1].title("Discord predicted gender")
+        gender_ax.set_title("Predicted gender")
         for key in gender_keys:
-            axs[1].plot(*zip(*sorted(zip(gender_times, gender_lists[key]))), marker='o')
-        axs[1].legend(["male", "female", "non-binary"])
+            gender_ax.plot(*zip(*sorted(zip(gender_times, gender_lists[key]))), marker='o')
+        gender_ax.legend(["male", "female", "non-binary"])
         # plt.tight_layout()
+        fig.text(0, 0, f"generated with discord data analyzer v{VERSION} https://dda.metacringe.com/", verticalalignment='bottom')
         plt.show()
 
     if len(age_times) == 0 and len(gender_times) == 0:
-        print("No data for you :( (there was no relevant data)")
+        print("No data for you :(")
 
 def main():
 
