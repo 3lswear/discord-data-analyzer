@@ -23,6 +23,8 @@ async function main() {
 	// await micropip.install("pandas");
 	addToOutput("Python packages and runtime loaded! ✅");
 	document.getElementById("directory-picker").removeAttribute("disabled")
+	document.getElementById("logo").style.filter = "none";
+	document.getElementById("overlay").style.display = "none";
 	return pyodide;
 }
 let pyodideReadyPromise = main();
