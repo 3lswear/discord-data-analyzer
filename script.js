@@ -44,7 +44,7 @@ async function evaluatePython() {
 
 		const nativefs = await pyodide.mountNativeFS("/data", dirHandle);
 		addToOutput("Loading the python script... 🔧");
-		pyodide.runPython(await (await fetch("/script.py")).text())
+		pyodide.runPython(await (await fetch("/main.py")).text())
 		addToOutput("Python file loaded! ✅");
 		document.getElementById("runbutton").removeAttribute("disabled")
 
