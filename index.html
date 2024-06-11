@@ -48,11 +48,12 @@
 
 		<details>
 			<summary>What is it?</summary>
-			It is a site (program) that graphs your Discord data from a file from your Discord Data Package.
+			It is a site (program) that graphs your Discord data from a file
+			from your Discord Data Package, fully on-device.
 		</details>
 		<details>
 			<summary>Why is it?</summary>
-			I wanted a write a simple site to point my frieds to to view their 
+			I wanted a write a simple site to point my friends to to view their 
 			Discord data. Cause it is fun to look at what Discord thinks about 
 			your gender and age.
 			<br>
@@ -61,19 +62,22 @@
 			browser, and works fully locally.
 		</details>
 		<details>
-			<summary>How does it work</summary>
+			<summary>How does it work?</summary>
 			You provide a directory, a Python script opens the events-*.json
 			file and plots the data with matplotlib.
 			And it doesn't send nor store any of your data!
-			Thanks to TODO: mention gist author
+			Thanks to <a href="https://github.com/rebane2001">rebane2001</a>
+			for writing a
+			<a href="https://gist.github.com/rebane2001/b0256bde6b999d9477938d5a968ded5c">gist</a>
+			by which this plotting script is heavily inspired.
 			<br>
 			Under the hood it uses PyOdide runtime (WASM) which conveniently
 			bundles several popular Python packages, including matplotlib.
 			<details>
-				<summary>Huh? Doesn't store? Why would I believe you?</summary>
-				You can see the source code for youself. It pulls pyodide 
-				runtime from a CDN, and python script is in /script.py, so feel
-				welcome to check it out yourself.
+				<summary>Huh? So it works fully on-device?</summary>
+				You can see the source code for yourself. It pulls PyOdide 
+				runtime from a CDN, and the python script is in /script.py, so
+				feel welcome to check it out yourself.
 			</details>
 		</details>
 
