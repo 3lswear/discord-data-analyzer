@@ -49,7 +49,15 @@ fig.set_size_inches(18, 15);
 age_ax: mpl_axes.Axes = axs[0]
 gender_ax: mpl_axes.Axes = axs[1]
 age_ax.set_ylim(0.0, 1.0)
-age_ax.set_ylim(0.0, 1.0)
+gender_ax.set_ylim(0.0, 1.0)
+
+age_ax.set_ylabel("Probability")
+age_ax.set_xlabel("Time")
+gender_ax.set_ylabel("Probability")
+gender_ax.set_xlabel("Time")
+
+age_ax.grid();
+gender_ax.grid();
 
 if (len(age_times)):
     fig.suptitle(f"Discord data for user_id {user_id}")
@@ -59,6 +67,8 @@ if (len(age_times)):
         print(f'plotting {key}')
         age_ax.plot(*zip(*sorted(zip(age_times, age_lists[key]))), marker='o')
     age_ax.legend(["13-17", "18-24", "25-34", "35+"])
+    # plt.grid()
+
     # plt.tight_layout()
     # plt.show()
 
@@ -68,8 +78,9 @@ if (len(gender_times)):
         gender_ax.plot(*zip(*sorted(zip(gender_times, gender_lists[key]))), marker='o')
     gender_ax.legend(["male", "female", "non-binary"])
     # plt.tight_layout()
-    fig.text(0, 0, f"generated with discord data analyzer v{VERSION} https://metacringe.com/dda", verticalalignment='bottom')
-    plt.show()
+fig.text(0, 0, f"created with discord data analyzer v{VERSION} https://metacringe.com/dda", verticalalignment='bottom')
+
+plt.show()
 
 if len(age_times) == 0 and len(gender_times) == 0:
     print("No data for you :(")
