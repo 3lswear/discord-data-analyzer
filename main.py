@@ -10,7 +10,7 @@ import matplotlib.axes as mpl_axes
 matplotlib.use("module://matplotlib_pyodide.wasm_backend")
 # matplotlib.use("module://matplotlib_pyodide.html5_canvas_backend")
 
-async def do_the_thing(event):
+async def do_the_thing(event) -> None:
 
     VERSION = "0.1"
 
@@ -54,7 +54,16 @@ async def do_the_thing(event):
     age_ax: mpl_axes.Axes = axs[0]
     gender_ax: mpl_axes.Axes = axs[1]
     age_ax.set_ylim(0.0, 1.0)
-    age_ax.set_ylim(0.0, 1.0)
+    gender_ax.set_ylim(0.0, 1.0)
+
+    age_ax.set_ylabel("Probability")
+    age_ax.set_xlabel("Time")
+    gender_ax.set_ylabel("Probability")
+    gender_ax.set_xlabel("Time")
+
+    age_ax.grid();
+    gender_ax.grid();
+
 
     if (len(age_times)):
         fig.suptitle(f"Discord data for user_id {user_id}")
@@ -73,7 +82,7 @@ async def do_the_thing(event):
             gender_ax.plot(*zip(*sorted(zip(gender_times, gender_lists[key]))), marker='o')
         gender_ax.legend(["male", "female", "non-binary"])
         # plt.tight_layout()
-        fig.text(0, 0, f"generated with discord data analyzer v{VERSION} https://dda.metacringe.com/", verticalalignment='bottom')
+        fig.text(0, 0, f"created with discord data analyzer v{VERSION} https://dda.metacringe.com/", verticalalignment='bottom')
         plt.show()
 
     if len(age_times) == 0 and len(gender_times) == 0:
